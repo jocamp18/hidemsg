@@ -13,13 +13,13 @@ section .data
    sys_write equ 4
    sys_open equ 5
 section .text
-global main
+global _start
 
-main:
-   pop ecx
-   pop ecx
-   cmp ecx,NUMARGS
-   jne InvalidArguments
+_start:
+   pop eax                                ;eax has the number of arguments
+   cmp eax,NUMARGS
+   pop eax                                ;eax has the name of the name of the program
+   jne InvalidArguments                   ;if argc != 6
    je FirstArgument
 
 FirstArgument:   
@@ -28,25 +28,28 @@ FirstArgument:
    mov ecx, okmessage
    mov edx, okLen
    int 80h
-   pop eax
-   pop eax
-   pop eax
+   pop eax                                ;eax has the first argument (The message)
    mov ecx, eax
-   cmp byte[eax], 'a'
-   je secondArgument
+   cmp byte[ecx], 'a'
+   je SecondArgument
+
+SecondArgument:
+   mov eax, sys_write
+   mov ebx, 1
+   mov ecx, okmessage
+   mov edx, okLen
+   int 80h
+   call exit
+
 InvalidArguments:
    mov eax, sys_write
    mov ebx, 1
    mov ecx, invalid
    mov edx, invalidLen
    int 80h
+   call exit
+
+exit:
    mov eax, sys_exit
    xor ebx, ebx
    int 80h
-secondArgument:
-   mov eax, sys_write
-   mov ebx, 1
-   mov ecx, okmessage
-   mov edx, okLen
-   int 80h
-
