@@ -6,10 +6,12 @@ section .bss
    destination_file resb 1024
    fd_in resb 1
    fd_out resb 1
-   content resb 1024
+   content resb 3200000
    contentLength resb 1024
    message resb 1024
    messageLength resb 1024
+   quotient resb 1
+   var resb 1
 
 section .data
 
@@ -42,11 +44,6 @@ FirstArgument:
    mov [message], eax
    call length
    mov [messageLength], eax
-   ;mov eax,sys_write
-   ;mov ebx,1
-   ;mov ecx, [message]
-   ;mov edx,[messageLength]
-   ;int 80h
    jmp SecondArgument
 
 SecondArgument:
@@ -73,38 +70,42 @@ FourthArgument:
 FifthArgument:
    pop eax                          ;eax has the fifth argument(The output file)
    mov [destination_file],eax
+   jmp BinaryNumber
+
+BinaryNumber:
+   ;movsx eax, byte[message]
+   ;mov esi, [message]
+   ;mov ecx, 10
+   ;call ascii
+   mov eax, [message] 
+   mov ecx, [messageLength]
+   call ascii
    jmp OpenFile
 
 OpenFile:
    mov ebx,[source_file]
-   mov eax, sys_open
-   mov ecx, 0
-   int 80h
-   mov eax, sys_read
-   mov ebx, eax
+   call OpenCall
    mov ecx, content
-   mov edx, 26
-   int 80h
+   mov edx, 3200000
+   call ReadCall
    mov eax, content
    call length
    mov [contentLength], eax
-   mov eax, sys_write
-   mov ebx, 1
-   mov ecx, content
-   mov edx, [contentLength]
-   int 80h
-   mov eax, sys_creat
+   ;mov eax, sys_write
+   ;mov ebx, 1
+   ;mov ecx, content
+   ;mov edx, [contentLength]
+   ;int 80h
+   ;mov eax, sys_creat
    mov ebx, [destination_file]
-   mov ecx, 0777
-   int 80h
-   ;mov [fd_out], eax
-   mov edx, [contentLength]
+   call CreatCall
+   mov edx, 3200000;[contentLength]
    mov ecx, content
    mov ebx, eax;[fd_out]
    mov eax, sys_write
    int 80h
    jmp exit
-   
+ 
 InvalidArguments:
    mov eax, sys_write
    mov ebx, 1
