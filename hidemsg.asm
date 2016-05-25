@@ -2,6 +2,7 @@
 
 section .bss
 
+   stat resb 64
    source_file resb 1024
    destination_file resb 1024
    fd_in resb 1
@@ -12,6 +13,22 @@ section .bss
    messageLength resb 1024
    quotient resb 1
    var resb 1
+
+struc STAT
+    .st_dev: resd 1
+    .st_ino: resd 1
+    .st_mode: resw 1
+    .st_nlink: resw 1
+    .st_uid: resw 1
+    .st_gid: resw 1
+    .st_rdev: resd 1
+    .st_size: resd 1
+    .st_atime: resd 1
+    .st_mtime: resd 1
+    .st_ctime: resd 1
+    .st_blksize: resd 1
+    .st_blocks: resd 1
+endstruc 
 
 section .data
 
@@ -27,6 +44,7 @@ section .data
    sys_open equ 5
    sys_close equ 6
    sys_creat equ 8
+   sys_stat equ 106
 
 section .text
 
@@ -77,20 +95,29 @@ BinaryNumber:
    ;mov esi, [message]
    ;mov ecx, 10
    ;call ascii
+   ;lea esi, [message]
+   ;mov ecx, 4
+   ;call string_to_int
    mov eax, [message] 
    mov ecx, [messageLength]
    call ascii
    jmp OpenFile
 
 OpenFile:
+   mov eax, sys_stat
+   mov ebx, [source_file]
+   mov eax, 106
+   int 80h
+   mov eax, dword [stat + STAT.st_size]
+   mov [contentLength], eax
    mov ebx,[source_file]
    call OpenCall
    mov ecx, content
    mov edx, 3200000
    call ReadCall
-   mov eax, content
-   call length
-   mov [contentLength], eax
+   ;mov eax, content
+   ;call Contentlength
+   ;mov [contentLength], eax
    ;mov eax, sys_write
    ;mov ebx, 1
    ;mov ecx, content
@@ -99,7 +126,7 @@ OpenFile:
    ;mov eax, sys_creat
    mov ebx, [destination_file]
    call CreatCall
-   mov edx, 3200000;[contentLength]
+   mov edx, contentLength
    mov ecx, content
    mov ebx, eax;[fd_out]
    mov eax, sys_write

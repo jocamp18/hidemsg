@@ -9,6 +9,21 @@ lpend:
    sub eax, ebx
    ret
 
+Contentlength:
+   mov  ebx, eax
+   mov edx, 0
+Contentlp:
+   movzx ecx, byte[eax]
+   cmp ecx, 0
+   jz  Contentlpend
+   inc eax
+   inc edx
+   jmp Contentlp
+Contentlpend:
+   ;sub eax, ebx
+   mov eax, edx
+   ret
+
 ;mov ebx, [file]
 OpenCall:
    mov eax, sys_open
@@ -22,6 +37,7 @@ ReadCall:
    mov eax, sys_read
    mov ebx, eax
    int 80h
+   je exit
    ret
 
 ;mov ebx, [file]
@@ -36,8 +52,10 @@ ascii:
    push eax
    push ebx
    push ecx
-   cmp byte[eax], 97
-   je write
+   cmp byte[eax], 0
+   je exit
+   
+      
 a: 
    pop ecx
    pop ebx
@@ -60,4 +78,5 @@ write:
    ;mov ecx, [message]
    ;mov edx,[messageLength]
    ;int 80h
+
 
