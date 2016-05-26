@@ -90,8 +90,6 @@ nextToken:
    push eax
    mov eax, ebx
    div dl
-   cmp eax, 33
-   je exit
    mov ebx, eax
    pop eax
    jmp label1
