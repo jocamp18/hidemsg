@@ -13,6 +13,7 @@ section .bss
    messageLength resb 1024
    quotient resb 1
    var resb 1
+   temp resb 10
 
 struc STAT
     .st_dev: resd 1
@@ -45,7 +46,7 @@ section .data
    sys_close equ 6
    sys_creat equ 8
    sys_stat equ 106
-
+   initial equ 128   
 section .text
 
 global _start

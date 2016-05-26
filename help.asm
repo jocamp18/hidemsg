@@ -9,21 +9,6 @@ lpend:
    sub eax, ebx
    ret
 
-Contentlength:
-   mov  ebx, eax
-   mov edx, 0
-Contentlp:
-   movzx ecx, byte[eax]
-   cmp ecx, 0
-   jz  Contentlpend
-   inc eax
-   inc edx
-   jmp Contentlp
-Contentlpend:
-   ;sub eax, ebx
-   mov eax, edx
-   ret
-
 ;mov ebx, [file]
 OpenCall:
    mov eax, sys_open
@@ -52,18 +37,64 @@ ascii:
    push eax
    push ebx
    push ecx
-   cmp byte[eax], 0
-   je exit
-   
+   mov eax, ebx
+   mov ebx, 128
+   mov dl, 2
+label1:
+   cmp eax, ebx
+   jge nextToken
+   cmp ebx, 1
+   je a
+   push eax
+   push ebx
+   push ecx
+   push edx
+   call write 
+   pop edx
+   pop ecx
+   pop ebx
+   pop eax
+   push eax
+   mov eax, ebx
+   div dl
+   mov ebx, eax
+   pop eax
+   jmp label1
       
 a: 
    pop ecx
    pop ebx
    pop eax
-   inc eax 
+   inc eax
+   ;inc eax
+   ;cmp byte[eax], 0
+   ;je exit
+   ;dec ecx
+   ;cmp ecx, 0
+   ;je exit
    loop ascii
+b:
    ret
 
+nextToken:
+   sub eax, ebx
+   push eax
+   push ebx
+   push ecx
+   push edx
+   call write
+   pop edx
+   pop ecx
+   pop ebx
+   pop eax
+   push eax
+   mov eax, ebx
+   div dl
+   cmp eax, 33
+   je exit
+   mov ebx, eax
+   pop eax
+   jmp label1
 
 write:
 
@@ -72,7 +103,7 @@ write:
    mov ecx, [message]
    mov edx, [messageLength]
    int 80h
-   jmp a
+   ret
 ;mov eax,sys_write
    ;mov ebx,1
    ;mov ecx, [message]
