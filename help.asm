@@ -88,9 +88,9 @@ nextToken:
    pop ebx
    pop eax
    push eax
-   mov eax, ebx
+   ;mov eax, ebx
    div dl
-   mov ebx, eax
+   ;mov ebx, eax
    pop eax
    jmp label1
 
