@@ -100,7 +100,7 @@ BinaryNumber:
    ;mov ecx, 4
    ;call string_to_int
    mov eax, [message] 
-   mov ecx, [messageLength]
+   mov edx, [messageLength]
    call ascii
    jmp OpenFile
 

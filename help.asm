@@ -36,15 +36,14 @@ ascii:
    movzx ebx, byte[eax]
    push eax
    push ebx
-   push ecx
+   push edx
    mov eax, ebx
    mov ebx, 128
-   mov dl, 2
 label1:
-   cmp eax, ebx
-   jge nextToken
    cmp ebx, 1
    je a
+   cmp eax, ebx
+   jge nextToken
    push eax
    push ebx
    push ecx
@@ -55,25 +54,28 @@ label1:
    pop ebx
    pop eax
    push eax
+   push edx
    mov eax, ebx
-   div dl
+   mov edx, 0
+   mov ecx, 2
+   div ecx
    mov ebx, eax
+   pop edx
    pop eax
    jmp label1
       
 a: 
-   pop ecx
+   pop edx
    pop ebx
    pop eax
    inc eax
    ;inc eax
    ;cmp byte[eax], 0
    ;je exit
-   ;dec ecx
-   ;cmp ecx, 0
-   ;je exit
-   loop ascii
-b:
+   dec edx
+   cmp edx, 0
+   jne ascii
+   ;loop ascii
    ret
 
 nextToken:
@@ -88,9 +90,13 @@ nextToken:
    pop ebx
    pop eax
    push eax
-   ;mov eax, ebx
-   div dl
-   ;mov ebx, eax
+   push ecx
+   mov eax, ebx
+   mov ecx, 2
+   mov edx, 0
+   div ecx
+   mov ebx, eax
+   pop ecx
    pop eax
    jmp label1
 
