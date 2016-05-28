@@ -1,7 +1,6 @@
 %include 'help.asm'
 
 section .bss
-
    stat resb 64
    source_file resb 1024
    destination_file resb 1024
@@ -11,11 +10,11 @@ section .bss
    contentLength resb 1024
    message resb 1024
    messageLength resb 1024
-   quotient resb 1
-   var resb 1
-   temp resb 10
+   ;quotient resb 1
+   ;var resb 1
+   temp resb 1024
    buffer resb 256
-
+   bufferLength resb 2
 struc STAT
     .st_dev: resd 1
     .st_ino: resd 1
@@ -114,31 +113,56 @@ BinaryNumber:
 OpenFile:
    mov eax, sys_stat
    mov ebx, [source_file]
-   mov eax, 106
+   mov ecx, stat
    int 80h
    mov eax, dword [stat + STAT.st_size]
    mov [contentLength], eax
    mov ebx,[source_file]
    call OpenCall
    mov ecx, content
-   mov edx, 3200000
+   mov edx, contentLength
    call ReadCall
-   ;mov eax, content
-   ;call Contentlength
-   ;mov [contentLength], eax
-   ;mov eax, sys_write
-   ;mov ebx, 1
-   ;mov ecx, content
-   ;mov edx, [contentLength]
-   ;int 80h
-   ;mov eax, sys_creat
+   mov eax, content
+   mov edx, [contentLength]
+.loop:
+   movzx ebx, byte[eax]
+   cmp eax, 127
+   jl .continue
+   ;cmp esi, 10000
+   ;je exit
+   ;push ecx
+   ;push eax
+   ;mov eax, ecx
+   ;and eax, 255
+   ;cmp eax, 30
+   ;jl exit
+   ;pop eax
+   ;pop ecx
+   push eax
+   push ecx
+   push edx
+   mov ecx, [message]
+   mov eax, sys_write
+   mov ebx, 1
+   mov edx, 1
+   int 80h
+   pop edx
+   pop ecx
+   pop eax
+   dec edx
+   cmp edx, 0
+   je .continue
+   jmp .loop   
+
+.continue:
    mov ebx, [destination_file]
    call CreatCall
-   mov edx, contentLength
+   mov edx, [contentLength]
    mov ecx, content
    mov ebx, eax;[fd_out]
    mov eax, sys_write
    int 80h
+
    jmp exit
  
 InvalidArguments:

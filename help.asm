@@ -27,7 +27,7 @@ ReadCall:
 ;mov ebx, [file]
 CreatCall:
    mov eax, sys_creat
-   mov ecx, 0777
+   mov ecx, 0420
    int 80h
    ret
 
