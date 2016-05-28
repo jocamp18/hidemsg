@@ -38,6 +38,10 @@ section .data
    file: db 'image.ppm'
    okmessage: db 'Ok', 10, 0
    okLen: equ $ - okmessage   
+   one: db '1', 10, 0
+   oneLen: equ $ - one
+   zero: db '0', 10, 0
+   zeroLen: equ $ - zero
    NUMARGS equ 6
    sys_exit equ 1
    sys_read equ 3

@@ -22,7 +22,6 @@ ReadCall:
    mov eax, sys_read
    mov ebx, eax
    int 80h
-   je exit
    ret
 
 ;mov ebx, [file]
@@ -40,7 +39,7 @@ ascii:
    mov eax, ebx
    mov ebx, 128
 label1:
-   cmp ebx, 1
+   cmp ebx, 0
    je a
    cmp eax, ebx
    jge nextToken
@@ -48,7 +47,7 @@ label1:
    push ebx
    push ecx
    push edx
-   call write 
+   call writeZero
    pop edx
    pop ecx
    pop ebx
@@ -84,7 +83,7 @@ nextToken:
    push ebx
    push ecx
    push edx
-   call write
+   call writeOne
    pop edx
    pop ecx
    pop ebx
@@ -108,6 +107,22 @@ write:
    mov edx, [messageLength]
    int 80h
    ret
+writeOne: 
+   mov eax, sys_write
+   mov ebx, 1
+   mov ecx, one
+   mov edx, oneLen
+   int 80h
+   ret
+
+writeZero: 
+   mov eax, sys_write
+   mov ebx, 1
+   mov ecx, zero
+   mov edx, zeroLen
+   int 80h
+   ret
+
 ;mov eax,sys_write
    ;mov ebx,1
    ;mov ecx, [message]
