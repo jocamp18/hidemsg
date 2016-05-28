@@ -14,6 +14,7 @@ section .bss
    quotient resb 1
    var resb 1
    temp resb 10
+   buffer resb 256
 
 struc STAT
     .st_dev: resd 1
@@ -50,7 +51,8 @@ section .data
    sys_close equ 6
    sys_creat equ 8
    sys_stat equ 106
-   initial equ 128   
+   initial equ 1   
+   
 section .text
 
 global _start
@@ -105,6 +107,7 @@ BinaryNumber:
    ;call string_to_int
    mov eax, [message] 
    mov edx, [messageLength]
+   mov ecx, 1
    call ascii
    jmp OpenFile
 

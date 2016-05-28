@@ -45,14 +45,15 @@ label1:
    jge nextToken
    push eax
    push ebx
-   push ecx
    push edx
-   call writeZero
+   ;call writeZero
+   mov byte[buffer + ecx], '0'
+   inc ecx
    pop edx
-   pop ecx
    pop ebx
    pop eax
    push eax
+   push ecx
    push edx
    mov eax, ebx
    mov edx, 0
@@ -60,6 +61,7 @@ label1:
    div ecx
    mov ebx, eax
    pop edx
+   pop ecx
    pop eax
    jmp label1
       
@@ -75,26 +77,29 @@ a:
    cmp edx, 0
    jne ascii
    ;loop ascii
+   call write
    ret
 
 nextToken:
    sub eax, ebx
    push eax
    push ebx
-   push ecx
    push edx
-   call writeOne
+   ;call writeOne
+   mov byte[buffer + ecx], '1'
+   inc ecx
    pop edx
-   pop ecx
    pop ebx
    pop eax
    push eax
    push ecx
+   push edx
    mov eax, ebx
    mov ecx, 2
    mov edx, 0
    div ecx
    mov ebx, eax
+   pop edx
    pop ecx
    pop eax
    jmp label1
@@ -103,8 +108,8 @@ write:
 
    mov eax, sys_write
    mov ebx, 1
-   mov ecx, [message]
-   mov edx, [messageLength]
+   mov ecx, buffer;[message]
+   mov edx, 256;[messageLength]
    int 80h
    ret
 writeOne: 
