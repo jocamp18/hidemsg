@@ -123,14 +123,13 @@ OpenFile:
    mov ecx, content
    mov edx, contentLength
    call ReadCall
-   mov eax, content
-   mov edx, 30;[contentLength]
-   add eax, 15
+   ;mov eax, content
+   mov ebp, content
+   mov edx, 32 ;[contentLength]
+   add ebp, 15
    mov esi, 1
-   mov ebp, [content]
-   push ebp
 loop:
-   movzx ebx, byte[eax]
+   movzx ebx, byte[ebp]
    push eax
    push ebx
    push ecx
@@ -150,12 +149,12 @@ loop:
 even:
    cmp byte[buffer + esi], '0'
    je Aux
-   or byte[eax], 1
+   or byte[ebp], 1
    jmp Aux
    
 Aux:
    inc esi
-   inc eax
+   inc ebp
    dec edx
    cmp edx, 0
    je continue
@@ -164,14 +163,14 @@ Aux:
 odd:   
    cmp byte[buffer + esi], '1'
    je Aux
-   and byte[eax], 254
+   and byte[ebp], 254
    jmp Aux 
 
 continue:
    ;pop ebp
    ;mov ebp, eax
    ;mov [content], ebp
-   ;mov [content], ebp
+   mov [content], ebp
    mov ebx, [destination_file]
    call CreatCall
    mov edx, [contentLength]
