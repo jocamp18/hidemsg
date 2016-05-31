@@ -14,7 +14,7 @@ section .bss
    ;var resb 1
    temp resb 1024
    buffer resb 256
-   bufferLength resb 2
+   bufferLength resb 3
    var resb 3
 struc STAT
     .st_dev: resd 1
@@ -124,12 +124,35 @@ OpenFile:
    mov edx, contentLength
    call ReadCall
    ;mov eax, content
-   mov ebp, content
-   mov edx, 32 ;[contentLength]
-   add ebp, 15
-   mov esi, 1
+   push eax
+   push ebx
+   mov eax, [messageLength]
+   mov ebx, 8
+   mul ebx
+   mov edx, eax
+   pop ebx
+   pop eax
+   mov edx, [bufferLength]
+   ;mov edx, 32 ;[contentLength]
+   mov ebp, 0
+   mov esi, 0
+find10:
+   cmp byte[content + ebp],10
+   je plus
+   inc ebp
+   jmp find10
+plus:
+   inc ebp
+   inc esi
+   cmp esi, 3
+   je preloop
+   jne find10
+preloop:
+   mov esi, 0
+   dec ebp
+   jmp loop   
 loop:
-   movzx ebx, byte[ebp]
+   movzx ebx, byte[content + ebp]
    push eax
    push ebx
    push ecx
@@ -149,7 +172,7 @@ loop:
 even:
    cmp byte[buffer + esi], '0'
    je Aux
-   or byte[ebp], 1
+   or byte[content + ebp], 1
    jmp Aux
    
 Aux:
@@ -163,14 +186,14 @@ Aux:
 odd:   
    cmp byte[buffer + esi], '1'
    je Aux
-   and byte[ebp], 254
+   and byte[content + ebp], 254
    jmp Aux 
 
 continue:
    ;pop ebp
    ;mov ebp, eax
    ;mov [content], ebp
-   mov [content], ebp
+   ;mov [content], ebp
    mov ebx, [destination_file]
    call CreatCall
    mov edx, [contentLength]
