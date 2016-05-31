@@ -15,6 +15,7 @@ section .bss
    temp resb 1024
    buffer resb 256
    bufferLength resb 2
+   var resb 3
 struc STAT
     .st_dev: resd 1
     .st_ino: resd 1
@@ -51,7 +52,7 @@ section .data
    sys_creat equ 8
    sys_stat equ 106
    initial equ 1   
-   
+   temp2 equ 39
 section .text
 
 global _start
@@ -123,38 +124,54 @@ OpenFile:
    mov edx, contentLength
    call ReadCall
    mov eax, content
-   mov edx, [contentLength]
-.loop:
+   mov edx, 30;[contentLength]
+   add eax, 15
+   mov esi, 1
+   mov ebp, [content]
+   push ebp
+loop:
    movzx ebx, byte[eax]
-   cmp eax, 127
-   jl .continue
-   ;cmp esi, 10000
-   ;je exit
-   ;push ecx
-   ;push eax
-   ;mov eax, ecx
-   ;and eax, 255
-   ;cmp eax, 30
-   ;jl exit
-   ;pop eax
-   ;pop ecx
    push eax
+   push ebx
    push ecx
    push edx
-   mov ecx, [message]
-   mov eax, sys_write
-   mov ebx, 1
-   mov edx, 1
-   int 80h
+   mov edx, 0
+   mov ecx, 2
+   mov eax, ebx
+   div ecx
+   cmp edx, 0
    pop edx
    pop ecx
+   pop ebx
    pop eax
+   je even
+   jne odd
+
+even:
+   cmp byte[buffer + esi], '0'
+   je Aux
+   or byte[eax], 1
+   jmp Aux
+   
+Aux:
+   inc esi
+   inc eax
    dec edx
    cmp edx, 0
-   je .continue
-   jmp .loop   
+   je continue
+   jmp loop
+   
+odd:   
+   cmp byte[buffer + esi], '1'
+   je Aux
+   and byte[eax], 254
+   jmp Aux 
 
-.continue:
+continue:
+   ;pop ebp
+   ;mov ebp, eax
+   ;mov [content], ebp
+   ;mov [content], ebp
    mov ebx, [destination_file]
    call CreatCall
    mov edx, [contentLength]
