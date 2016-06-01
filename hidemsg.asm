@@ -134,25 +134,29 @@ OpenFile:
    pop eax
    mov edx, [bufferLength]
    ;mov edx, 32 ;[contentLength]
-   mov ebp, 0
    mov esi, 0
+   mov ebp, 0
 find10:
-   cmp byte[content + ebp],10
+   cmp byte[content + esi],10
    je plus
-   inc ebp
+   inc esi
    jmp find10
 plus:
    inc ebp
    inc esi
-   cmp esi, 3
+   cmp ebp, 3
    je preloop
    jne find10
 preloop:
-   mov esi, 0
-   dec ebp
+   mov ebp, 0
+   dec esi  
+   push esi
    jmp loop   
+etiqueta:
+   call writeOne
+   jmp exit
 loop:
-   movzx ebx, byte[content + ebp]
+   movzx ebx, byte[content + esi]
    push eax
    push ebx
    push ecx
@@ -165,14 +169,14 @@ loop:
    pop edx
    pop ecx
    pop ebx
-   pop eax
+   pop eax 
    je even
    jne odd
 
 even:
-   cmp byte[buffer + esi], '0'
+   cmp byte[buffer + ebp], '0'
    je Aux
-   or byte[content + ebp], 1
+   or byte[content + esi], 1
    jmp Aux
    
 Aux:
@@ -184,9 +188,9 @@ Aux:
    jmp loop
    
 odd:   
-   cmp byte[buffer + esi], '1'
+   cmp byte[buffer + ebp], '1'
    je Aux
-   and byte[content + ebp], 254
+   and byte[content + esi], 254
    jmp Aux 
 
 continue:
@@ -194,6 +198,8 @@ continue:
    ;mov ebp, eax
    ;mov [content], ebp
    ;mov [content], ebp
+   pop esi
+   mov byte[content + esi], 10
    mov ebx, [destination_file]
    call CreatCall
    mov edx, [contentLength]

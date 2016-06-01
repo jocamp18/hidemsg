@@ -108,6 +108,7 @@ write:
    mov eax, [messageLength]
    mov ebx, 8
    mul ebx
+   add eax,1
    mov [bufferLength], eax
    mov eax, sys_write
    mov ebx, 1
