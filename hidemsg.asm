@@ -10,7 +10,6 @@ section .bss
    contentLength resb 1024
    message resb 1024
    messageLength resb 1024
-   temp resb 1024
    buffer resb 256
    bufferLength resb 3
 struc STAT
@@ -31,15 +30,11 @@ endstruc
 
 section .data
 
-   invalid: db 'Por favor ingresar los argumentos de la siguiente manera: hidemsg "Hola a todos" -f archivo1.ppm -o archivo2.ppm', 10, 0
+   invalid: db 'Debe colocar los parametros requeridos para funcionar: hidemsg "Hola a todos" -f archivo1.ppm -o archivo2.ppm', 10, 0
    invalidLen: equ $ - invalid
    file: db 'image.ppm'
    okmessage: db 'Ok', 10, 0
    okLen: equ $ - okmessage   
-   one: db '1', 10, 0
-   oneLen: equ $ - one
-   zero: db '0', 10, 0
-   zeroLen: equ $ - zero
    NUMARGS equ 6
    sys_exit equ 1
    sys_read equ 3
@@ -114,17 +109,7 @@ OpenFile:
    mov ecx, content
    mov edx, contentLength
    call ReadCall
-   ;mov eax, content
-   push eax
-   push ebx
-   mov eax, [messageLength]
-   mov ebx, 8
-   mul ebx
-   mov edx, eax
-   pop ebx
-   pop eax
    mov edx, [bufferLength]
-   ;mov edx, 32 ;[contentLength]
    mov esi, 0
    mov ebp, 0
 find10:
@@ -143,9 +128,6 @@ preloop:
    dec esi  
    push esi
    jmp loop   
-etiqueta:
-   call writeOne
-   jmp exit
 loop:
    movzx ebx, byte[content + esi]
    push eax
@@ -185,17 +167,13 @@ odd:
    jmp Aux 
 
 continue:
-   ;pop ebp
-   ;mov ebp, eax
-   ;mov [content], ebp
-   ;mov [content], ebp
    pop esi
    mov byte[content + esi], 10
    mov ebx, [destination_file]
    call CreatCall
    mov edx, [contentLength]
    mov ecx, content
-   mov ebx, eax;[fd_out]
+   mov ebx, eax
    mov eax, sys_write
    int 80h
 
