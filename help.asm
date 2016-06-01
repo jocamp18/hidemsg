@@ -14,6 +14,8 @@ OpenCall:
    mov eax, sys_open
    mov ecx, 0
    int 80h
+   cmp eax, 0
+   jbe InvalidArguments
    ret
 
 ;mov ecx, content
@@ -22,6 +24,7 @@ ReadCall:
    mov eax, sys_read
    mov ebx, eax
    int 80h
+   js InvalidArguments
    ret
 
 ;mov ebx, [file]

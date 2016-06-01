@@ -10,12 +10,9 @@ section .bss
    contentLength resb 1024
    message resb 1024
    messageLength resb 1024
-   ;quotient resb 1
-   ;var resb 1
    temp resb 1024
    buffer resb 256
    bufferLength resb 3
-   var resb 3
 struc STAT
     .st_dev: resd 1
     .st_ino: resd 1
@@ -52,7 +49,6 @@ section .data
    sys_creat equ 8
    sys_stat equ 106
    initial equ 1   
-   temp2 equ 39
 section .text
 
 global _start
@@ -98,15 +94,10 @@ FifthArgument:
    jmp BinaryNumber
 
 BinaryNumber:
-   ;movsx eax, byte[message]
-   ;mov esi, [message]
-   ;mov ecx, 10
-   ;call ascii
-   ;lea esi, [message]
-   ;mov ecx, 4
-   ;call string_to_int
    mov eax, [message] 
    mov edx, [messageLength]
+   cmp edx, 0
+   je InvalidArguments
    mov ecx, 1
    call ascii
    jmp OpenFile
